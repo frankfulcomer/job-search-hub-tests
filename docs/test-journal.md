@@ -15,6 +15,9 @@
   - `requirements.txt`
 - Created the external test automation strategy.
 - Created the initial functional-requirement traceability matrix.
+- Verified Selenium WebDriver can launch and control Chrome locally.
+- Added a reusable Pytest WebDriver fixture with automatic browser cleanup.
+- Added and passed an initial browser smoke test.
 
 ### Key Decisions
 
@@ -26,7 +29,4 @@
 
 ### Next Steps
 
-- Configure repository dependencies and Git exclusions.
-- Establish browser configuration and the initial Pytest fixture.
-- Confirm Selenium can launch and control the browser.
 - Implement the first Job Search Hub smoke test.
