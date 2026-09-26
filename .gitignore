@@ -1,0 +1,17 @@
+# Python virtual environment
+.venv/
+
+# Python generated files
+__pycache__/
+*.py[cod]
+
+# Pytest
+.pytest_cache/
+
+# Test artifacts
+screenshots/
+reports/
+
+# Editor / OS files
+.vscode/
+.DS_Store
