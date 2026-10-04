@@ -1,5 +1,12 @@
-def test_job_hub_home_page_loads(driver):
-    driver.get("http://127.0.0.1:5000")
+"""Browser/application smoke: the managed application instance comes up
+and serves its home page, using the shared driver and a dedicated,
+fixture-owned application process (docs/test-strategy.md)."""
 
-    assert driver.title == "Job Hub - Home"
-    assert "Welcome to Job Hub" in driver.page_source
+from pages.home_page import HomePage
+
+
+def test_home_page_loads(driver, app_server):
+    home = HomePage(driver, app_server.base_url).load()
+
+    assert home.title == "Job Hub - Home"
+    assert home.welcome_heading_text == "Welcome to Job Hub"

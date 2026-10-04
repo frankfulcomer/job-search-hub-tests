@@ -1,15 +1,10 @@
-from selenium import webdriver
-import time
+"""Confirms the WebDriver/Chrome stack itself works, independently of
+Job Search Hub. Deliberately does not start or depend on the application,
+so a failure here points at the browser environment rather than the
+product (docs/test-strategy.md)."""
 
 
-def test_browser_starts():
-    driver = webdriver.Chrome()
-    print(driver.capabilities.get("browserName"))
-    print(driver.capabilities.get("browserVersion"))
+def test_browser_starts(driver):
+    driver.get("about:blank")
 
-    try:
-        driver.get("about:blank")
-        time.sleep(3)
-        assert driver.title == ""
-    finally:
-        driver.quit()
+    assert driver.title == ""

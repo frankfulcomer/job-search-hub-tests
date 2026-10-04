@@ -78,6 +78,47 @@ and repeatable manner.
 
 Test data shall be clearly identifiable as test data.
 
+## Isolation, Fixtures, and Verification
+
+Pytest fixtures (`tests/conftest.py`), not a manually started server or a
+shared database, shall own the lifecycle of both the application instance
+under test and its database for each test:
+
+- A fresh, isolated SQLite file is created for the test, and the
+  application is started as a dedicated subprocess against it on a
+  freshly selected loopback port. Ordinary application startup creates
+  schema and seeds reference data; this repository never resets or
+  prepares that database by other means.
+- The application process, its database connection, and the shared
+  browser session shall all be released on test success, test failure,
+  and fixture setup error alike. A fixture shall only ever terminate the
+  process it itself started.
+- Readiness is established by bounded polling of the running instance,
+  not a fixed delay; waits for in-page state shall use explicit
+  conditions rather than arbitrary sleeps.
+
+Browser-level assertions verify what a user would observe. Where a
+scenario specifically claims a persistence outcome (e.g., that a status
+change produced exactly one new history record with specific values),
+tests additionally open the exact fixture-owned SQLite file, read-only,
+and verify it directly with explicit columns and joins. This SQL step is
+a verification oracle only - it shall never create test data, call
+application code, or connect to a database other than the current test's
+own managed instance.
+
+Failure diagnosis shall distinguish three categories: environment/
+infrastructure failures (e.g., the browser or application process failing
+to start), product defects (the application behaving incorrectly once
+both are running), and test defects (an incorrect assertion or fixture).
+Fixture setup failures are reported distinctly from assertion failures
+within a test to make this distinction visible from the pytest output
+itself.
+
+This milestone's execution remains local-first and deliberately scoped: a
+small, representative set of workflows verified through a real browser
+and a real running instance, not exhaustive requirement coverage. See
+`docs/traceability.md` for what is and is not covered.
+
 ## Execution
 
 Pytest shall provide test discovery, execution, fixtures, and result reporting.
@@ -94,6 +135,10 @@ GitHub Actions shall eventually execute the external automated test suite agains
 a known Job Search Hub version in an isolated environment.
 
 CI shall be introduced after reliable local execution has been established.
+Reliable local execution (including rerun and order independence) has now
+been demonstrated, but CI itself remains an outstanding Phase 1 item for
+this repository, not something this milestone introduces or claims as
+complete.
 
 Useful failure artifacts such as screenshots, logs, or test reports may be
 preserved when they improve diagnosis.

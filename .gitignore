@@ -8,6 +8,24 @@ __pycache__/
 # Pytest
 .pytest_cache/
 
+# Local environment / secret files
+.env
+.env.*
+!.env.example
+
+# SQLite databases and sidecar files (this repository's own databases are
+# always created under pytest's tmp_path, outside the repository; this
+# guards against one ever being created or copied in by hand)
+*.sqlite
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+*.sqlite3-journal
+*.db
+
+# Logs
+*.log
+
 # Test artifacts
 screenshots/
 reports/
