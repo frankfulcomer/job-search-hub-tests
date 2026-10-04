@@ -563,3 +563,78 @@ remained. No application or test code was touched; the external suite was
 not re-run, consistent with this remaining a documentation-only task.
 Still not committed, tagged, or pushed. Ready for Codex's review and human
 approval.
+
+
+## 2026-10-04 — Whitespace-validation synchronization correction
+
+This entry records work subsequent to the earlier Selenium milestone and its
+transcript. It is an engineering summary of independently retained evidence,
+not a reconstruction or amendment of that transcript. The shared workflow's
+`docs/development-journal.md` owns the coordination and portfolio narrative;
+[repository instructions](../AGENTS.md) locate that workflow and its policy.
+
+### Finding and minimal correction
+
+The communication-plumbing trial's independent Selenium run returned 10 passed
+and 1 failed. The whitespace-only company-name scenario expected
+`company_name: is required` but immediately read `None`. Repository inspection
+and browser diagnostics confirmed that the input held three spaces, native
+validation accepted it, and the existing application rejected it with the
+specified field error. Requirements, expected behavior, and test data were
+consistent; no application behavior or requirement change was needed.
+
+The test clicked submit and immediately checked a URL that is identical before
+and after a rejected POST, then looked for the error without waiting. Six normal
+isolated repetitions and a full-suite reproduction passed unchanged. Added
+network latency also did not reproduce the original failure. A temporary,
+external diagnostic plugin deliberately deferred submission by 500 ms: the
+unmodified test failed at the original assertion, then the real server response
+showed the correct error and invalid-field marker. This confirms the missing-wait
+vulnerability; attribution of the original natural failure to that timing
+mechanism remains an inference.
+
+Claude added `NewApplicationPage.submit_expecting_error(timeout=10)` and used it
+for the three server-rejection submissions. The final helper waits explicitly
+for visible `form-error` on a freshly loaded, error-free form. Exact messages,
+retained-input assertions, read-only SQL/no-partial-write checks, and successful
+recovery remain intact. Native browser-validation submissions are unchanged.
+
+Independent normal-suite validation rejected an initial old-form staleness wait:
+Chrome reported a detached-node inspector error. Codex requested the simpler
+visible-error wait through the same persisted Claude session and reviewed its
+actual diff before revalidating. No fixed sleep, assertion relaxation, broad
+exception suppression, or application change was added to the test suite. The
+500 ms delay belongs only to the external diagnostic experiment.
+
+### Independent validation and provenance
+
+Both final commands ran from the test repository root through the existing
+workflow's host test command, independently of Claude's report:
+
+| Check | Command | Result | Evidence directory ID |
+| --- | --- | --- | --- |
+| Normal complete suite | `.venv/bin/python -m pytest tests/ -v` | **11 passed**, 16.25 s; exit 0 | `20261004T192933Z-tests-2f3e21` |
+| Controlled delayed submission | Same interpreter, external plugin loaded with `-p whitespace_delayed_submit`, `tests/test_server_validation.py -s -v` | **3 passed**, 7.60 s; exit 0 | `20261004T192904Z-tests-5acad0` |
+
+These are two distinct checks, not 14 distinct product tests. The diagnostic
+plugin and its `PYTHONPATH` were external to both source repositories; complete
+argument lists and raw test stdout/stderr remain in the local evidence metadata.
+Both checks belong to continuation `20261004T192827Z-058e2903`. The pre-fix
+controlled failure is `20261004T192529Z-tests-fd7af4` under investigation run
+`20261004T192204Z-36d6cfb6`. Evidence is resolved from the existing profile's raw
+run directory, without copying raw conversations or machine-specific paths into
+this journal.
+
+Test-repository HEAD was `ee3a9c49d8fffe640a6cb24ca358a663de336e75` plus the
+uncommitted fix; application HEAD was
+`26a42ed6af43841b81e25ac156dbec2dc030ae80`. Implementation snapshots show only
+`pages/new_application_page.py` and `tests/test_server_validation.py` changed.
+The separately approved README improvement was preserved. Final test snapshots
+show no additional nonignored source changes; this is not an audit of ignored
+runtime files.
+
+The human approved keeping the test-only fix after independent review and
+validation. That approval retained the working-tree changes; it did not
+authorize committing or pushing. No new scenario coverage or CI capability is
+claimed. Future rejection tests should wait for an observable server response;
+the new helper requires a fresh form without an existing error.

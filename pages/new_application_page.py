@@ -53,6 +53,18 @@ class NewApplicationPage:
         self._field("submit-application").click()
         return self
 
+    def submit_expecting_error(self, timeout=10):
+        """Submit, then wait for the server to re-render the form with an error.
+
+        Expects a freshly loaded form with no existing #form-error, so the
+        error becoming visible can only come from the server's response.
+        """
+        self.submit()
+        WebDriverWait(self.driver, timeout).until(
+            EC.visibility_of_element_located((By.ID, "form-error"))
+        )
+        return self
+
     def wait_for_list_redirect(self, timeout=10):
         WebDriverWait(self.driver, timeout).until(
             EC.url_to_be(self.base_url + "/applications")

@@ -30,7 +30,7 @@ def test_whitespace_only_required_text_is_rejected_then_corrected(
     page.set_field("application_date", PAST_APPLICATION_DATE)
     page.set_field("source_name", VALID_SOURCE_NAME)
     page.set_field("initial_status_effective_at", PAST_EFFECTIVE_AT)
-    page.submit()
+    page.submit_expecting_error()
 
     assert page.current_url == app_server.base_url + "/applications/new"
     assert page.error_message == "company_name: is required"
@@ -69,7 +69,7 @@ def test_missing_retrospective_initial_status_time_is_rejected(
     # initial_status_effective_at left blank; initial_status_name left at
     # its default (APPLIED). A past application_date makes this a
     # retrospective entry, which requires an explicit effective time.
-    page.submit()
+    page.submit_expecting_error()
 
     assert page.current_url == app_server.base_url + "/applications/new"
     assert page.error_message == (
@@ -90,7 +90,7 @@ def test_compensation_min_above_max_is_rejected(driver, app_server, app_db):
     page.set_field("compensation_min", "100000")
     page.set_field("compensation_max", "50000")
     page.set_field("compensation_basis", "ANNUAL")
-    page.submit()
+    page.submit_expecting_error()
 
     assert page.current_url == app_server.base_url + "/applications/new"
     assert page.error_message == "compensation_min: must not exceed compensation_max"
