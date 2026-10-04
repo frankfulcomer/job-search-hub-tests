@@ -360,3 +360,206 @@ Codex's independent 17.30-second run.
 
 Still pending: Codex's final review of these corrections, and human
 approval. Not committed, tagged, or pushed.
+
+## 2026-10-04 - Transcript Preservation and Companion Highlights
+
+A full session transcript, exported via `/export` to this repository's
+root as `2026-10-04-122503-document-repository-privacy-audit-and-lessons-lea.txt`,
+covered three tasks: privacy-audit documentation work performed in the
+sibling `job-search-hub` repository (already fully recorded there as commit
+`50e1b68` plus that repository's own journal and lessons-learned entries),
+this milestone's implementation (recorded above), and Codex's review
+findings and Claude's corrections (recorded above). The export was
+untracked and contained personal information: an account email address and
+several local home-directory paths.
+
+### Private preservation
+
+Computed the export's SHA-256 checksum, copied it unchanged to
+`~/Private/job-search-hub-transcripts/` (a location outside both
+repositories' working trees), and confirmed the copy was byte-for-byte
+identical to the original via both a checksum comparison and `cmp` before
+removing the original from this repository's working directory. The
+original was not committed, and no Git history was rewritten - it was
+simply never added to the index in the first place. A short manifest note
+was left alongside the private copy (also outside both repositories)
+recording its origin and the sanitized file it corresponds to.
+
+### Sanitization
+
+Determined, from the transcript's own content (its sequence of `❯` prompts,
+not filenames or assumptions), the exact line ranges for each of the three
+tasks above. Prepared a sanitized copy, from the verified private original,
+at `docs/transcripts/2026-10-04-privacy-audit-documentation-and-selenium-milestone.txt`
+- the first transcript committed to this repository (`job-search-hub`'s
+`docs/transcripts/` structure and naming convention was followed, newly
+established here rather than extended there).
+
+Identified every instance of personal information by direct inspection and
+targeted search (not assumed from the single prior redaction precedent)
+before changing anything: one occurrence of the account's first name (the
+banner greeting), one occurrence of the account email address, and four
+occurrences of an absolute `/home/<user>/...` path inside the human's own
+prompt text. Also explicitly checked for and found none of: machine
+identifiers beyond the home-directory username, credentials, tokens,
+private key material, or phone-number-shaped strings.
+
+Redacted the email address to the same `user@example.com` placeholder
+`job-search-hub`'s own prior sanitized transcript already established
+(copied that transcript's equivalent banner line verbatim, since both
+sessions share identical Claude Code banner formatting apart from the
+email and working-directory fields), and rewrote each absolute
+home-directory path to its `~/...`-relative equivalent, consistent with
+how this same transcript's own Claude Code banner already displays its
+own working directory.
+
+The banner greeting's first name was initially left unredacted in this
+transcript, on the reasoning that it matched an established precedent in
+`job-search-hub`'s own sanitized canonical transcript, which treats the
+account's first name - unlike its email address and filesystem paths - as
+not requiring redaction. On review, that precedent does not override this
+task's redaction requirement for personal information generally: a
+person's first name is itself personal information, regardless of an
+earlier, separate transcript's treatment of it. The greeting was corrected
+to replace the name with a neutral five-character placeholder ("there"),
+chosen so the surrounding box-drawing layout's column width did not need
+to be recalculated. `job-search-hub`'s own, already-committed canonical
+transcript was not revisited or changed - that would require rewriting
+that repository's Git history, which is out of scope here - so this
+transcript now redacts the first name while that earlier, unrelated
+transcript still does not; this inconsistency between the two is noted
+here rather than silently left unexplained.
+
+Verified the result by diffing the sanitized file against the verified
+private original: confirmed the only differences were six intended
+substitutions (the name, the email address, and the four path
+occurrences), that every other line was byte-for-byte identical, and that
+the line count was unchanged (2,798 lines in both). Re-scanned the
+sanitized file afterward for the account's name, name-derived strings,
+email domain, literal `/home/` paths, and common credential/token/
+private-key patterns: no remaining matches. Also re-confirmed, by checksum
+and `cmp`, that the private original at
+`~/Private/job-search-hub-transcripts/` remained byte-for-byte unchanged
+throughout this correction.
+
+### Overlap handling
+
+The transcript's first task (privacy-audit documentation in
+`job-search-hub`) is not separately summarized or duplicated in this
+repository: it is already fully recorded in `job-search-hub` itself (commit
+`50e1b68` and that repository's own `docs/journal/2026-09.md` and
+`docs/lessons-learned.md`). `job-search-hub` was not modified by this
+documentation pass - no reciprocal pointer was added there, since the
+overlap is fully documented from this side (this entry and the companion
+highlights document's "Scope and provenance" section both name the
+specific commit and files involved) and touching an already-committed,
+already-pushed repository for a cross-reference alone was judged
+unnecessary. The full transcript lives in exactly one place
+(`job-search-hub-tests`), not copied into both repositories.
+
+### Companion highlights
+
+Located `job-search-hub`'s existing companion highlights document
+(`docs/transcripts/2026-09-20-to-2026-09-23-phase-1-highlights.md`) before
+writing anything, to decide whether to extend it. Its stated coverage is
+the Phase 1 application MVP effort in the other repository - a different
+repository, phase, and test level from this milestone - so extending it
+would have mixed two repositories' records into one document. Created a
+new, clearly-identified companion instead:
+`docs/transcripts/2026-10-04-selenium-milestone-highlights.md`, scoped to
+this transcript's second and third tasks only (the first being
+`job-search-hub`'s own, as above). It links to the sanitized transcript and
+to this journal, distinguishes human direction, Codex's brief and
+independent review, and Claude's implementation and corrections, and
+records the meaningful correction found along the way (the earlier,
+disproven "missing application date" hypothesis) rather than presenting
+an artificially clean narrative. Milestone commit `275c700` was verified
+present on `main` via `git log`/`git show` before being cited.
+
+Results recorded with their correct provenance: Codex's own, independently
+run 11-passed-in-17.30-seconds figure is distinguished throughout from
+Claude's separate runs (15.67s/14.42s/14.33s and the individual runs,
+recorded above); the 446-passing application-suite figure remains
+attributed to Claude's run only. The highlights document explicitly states
+that Codex's final review of the correction pass, and human approval, had
+not yet occurred as of the end of the transcript it describes.
+
+### Verification
+
+```
+$ git diff --check
+```
+No output (no whitespace errors).
+
+```
+$ git status --short
+```
+Showed only this documentation pass's own new/modified files
+(`docs/transcripts/2026-10-04-privacy-audit-documentation-and-selenium-milestone.txt`,
+`docs/transcripts/2026-10-04-selenium-milestone-highlights.md`, this
+journal) - no trace of the raw export (relocated out of the repository
+before this check) and no generated database, report, screenshot, or log
+file. Re-scanned every newly added file for credential/token/private-key
+patterns, stray email addresses, and `/home/` paths: none found beyond the
+single intentionally-preserved greeting noted above (see "Correction:
+Codex's Review of This Documentation Pass" below - that greeting was
+subsequently redacted too).
+
+This was a documentation-only task: no application code, test code, or
+test coverage was changed, so the external suite was not re-run as part of
+it. Not committed, tagged, or pushed. Ready for Codex's review and human
+approval, alongside the correction pass recorded above.
+
+### Correction: Codex's Review of This Documentation Pass
+
+Codex reviewed the transcript and highlights work above and requested
+three focused corrections:
+
+1. **Incomplete redaction.** The banner greeting's first name should be
+   redacted like the email address and paths were, regardless of the
+   unrelated precedent in `job-search-hub`'s own, separate, already-
+   committed transcript.
+2. **Mixed chronology.** The highlights document's final section mixed
+   what the transcript itself records (ending with Claude's correction
+   report) with events that happened afterward, outside the transcript
+   (Codex's subsequent confirmation and the human's commit action),
+   without clearly separating the two or attributing the latter to their
+   actual source.
+3. **Missing working links.** Plain-text filename references to the
+   sanitized transcript and to this journal should be working relative
+   Markdown links, checked to actually resolve.
+
+Each was corrected:
+
+1. Replaced the personalized greeting with a neutral greeting in the
+   sanitized transcript (a same-length placeholder chosen so nothing else on that line needed re-padding), and rewrote the "Sanitization" section above to explain the correction and why the earlier precedent does not apply here. Re-confirmed the private original at
+   `~/Private/job-search-hub-transcripts/` was unchanged (checksum and
+   `cmp`, both still matching the value recorded earlier in this entry),
+   and re-diffed the sanitized file against it: exactly six differences
+   now (the name, the email, and the four path occurrences), every other
+   line byte-for-byte identical, line count still 2,798/2,798.
+2. Rewrote the highlights document's final section (now "6. Chronology:
+   Transcript End and Subsequent Events") into four explicit parts: what
+   the transcript itself shows at its end; what is known to have happened
+   afterward, attributed to the supplied Codex review context and to Git
+   evidence rather than to the transcript; the specific Git evidence
+   (commit `275c700`, re-verified locally); and the current, still-
+   uncommitted state of this documentation pass itself. The transcript
+   file itself was not touched to add any of this.
+3. Added working relative Markdown links from the highlights document to
+   the sanitized transcript (`2026-10-04-privacy-audit-documentation-and-selenium-milestone.txt`,
+   a same-directory sibling) and to this journal (`../test-journal.md`),
+   at every plain-text mention of either file. Verified both relative
+   paths resolve with `realpath -e` from the highlights document's own
+   directory.
+
+Re-verification: `git diff --check` reported no whitespace errors. `git
+status --short` showed only `docs/test-journal.md` (modified) and
+`docs/transcripts/` (containing the two files already recorded above) -
+no other file. Re-scanned both files in `docs/transcripts/` again for the
+account's name, name-derived strings, email domain, literal `/home/`
+paths, and credential/token/private-key patterns: no matches of any kind
+remained. No application or test code was touched; the external suite was
+not re-run, consistent with this remaining a documentation-only task.
+Still not committed, tagged, or pushed. Ready for Codex's review and human
+approval.
