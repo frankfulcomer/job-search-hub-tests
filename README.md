@@ -140,6 +140,13 @@ source .venv/bin/activate   # this repository's own environment
 pytest tests/
 ```
 
+Or, without activating anything (avoids accidentally running under
+`job-search-hub`'s environment), from this repository's root:
+
+```bash
+.venv/bin/python -m pytest tests/
+```
+
 Useful options:
 
 - `pytest tests/ --headed` - run with a visible Chrome window instead of
